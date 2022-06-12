@@ -10,7 +10,7 @@ jobs:
   
   build:
     runs-on: ubuntu-latest
-    container: jqueen/msp430-builds-public
+    container: jqueen/msp430-builds-public:20081229
 
     steps:
     - name: Checkout Code
