@@ -1,21 +1,27 @@
 /* 
-	Linker script for MSP430F247 user code.  Based on msp430x2471.x 
+	Linker script for MSP430F247 user code.
+	**For use with stream enabled bootloader only**
 */
-OUTPUT_FORMAT("elf32-msp430","elf32-msp430","elf32-msp430")
+OUTPUT_FORMAT("elf32-msp430")
 OUTPUT_ARCH(msp:24)
 MEMORY
 {
-  vectors (rw)      : ORIGIN = 0xefe0,     LENGTH = 32  /* put gcc generated vector table here, won't be used by code but addresses will be used during interrupt revectoring step */
-  uservectors (rx)	: ORIGIN = 0xefa0,	   LENGTH = 64	/* length of 64 to handle 4 bytes per interrupt, which allows "br" plus address */
-  text   (rx)       : ORIGIN = 0x8010,     LENGTH = 0x6f90
-  crcstore   (rx)   : ORIGIN = 0x8000,     LENGTH = 16	/* crc and used sector bitfield will be programmed here */
-  data   (rwx)      : ORIGIN = 0x1100,     LENGTH = 4096
-  bootloader(rx)    : ORIGIN = 0x0c00,     LENGTH = 1K
-  infomem(rx)       : ORIGIN = 0x1000,     LENGTH = 256
-  infomemnobits(rx) : ORIGIN = 0x1000,     LENGTH = 256
+  ram_mirror (wx)   : ORIGIN = 0x0200, LENGTH = 0x0800 /* END=0x0a00, size 2K */
+  infomemnobits(rx) : ORIGIN = 0x1000, LENGTH = 0x0100 /* END=0x1100, size 256 as 4 64-byte segments */	
+  infomem(rx)       : ORIGIN = 0x1000, LENGTH = 0x0100 /* END=0x1100, size 256 as 4 64-byte segments */
+  data   (rwx)      : ORIGIN = 0x1100, LENGTH = 0x1000 /* END=0x2100, size 4K */
+  /* WARNING: MAKE SURE IN LINKER THAT USER CODE AREA IS A MULTIPLE OF 512b */
+  crcstore   (rx)   : ORIGIN = 0x8000, LENGTH = 0x0010 /* END=0x8010, crc and used sector bitfield will be programmed here */
+  uservectors (rx)	: ORIGIN = 0x8010, LENGTH = 0x0040 /* END=0x8050, length of 64 to handle 4 bytes per interrupt, which allows "br" plus address */
+  vectors (rw)      : ORIGIN = 0x8050, LENGTH = 0x0020 /* END=0x8070, put gcc generated vector table here, won't be used by code but addresses will be used during interrupt revectoring step */
+  text   (rx)       : ORIGIN = 0x8070, LENGTH = 0x6d90 /* END=0xee00, user code program space, size of 27.39k */
+  hware_version (r) : ORIGIN = 0xffd8, LENGTH = 0x0008 /* END=0xffe0, size 8; device, project shared info */
 }
+
 SECTIONS
 {
+  /* Device, project shared information section */
+  .hware_version (NOLOAD): { *(.hware_version) } > hware_version
   /* Read-only sections, merged into text segment.  */
   .hash          : { *(.hash)             }
   .dynsym        : { *(.dynsym)           }
@@ -150,13 +156,13 @@ SECTIONS
     PROVIDE (__data_load_start = LOADADDR(.data) );
     PROVIDE (__data_size = SIZEOF(.data) );
   /* Bootloader.  */
-  .bootloader   :
+/*  .bootloader   :
   {
      PROVIDE (__boot_start = .) ;
     *(.bootloader)
     . = ALIGN(2);
     *(.bootloader.*)
-  }  > bootloader
+  }  > bootloader*/
   /* Information memory.  */
   .infomem   :
   {
@@ -230,10 +236,12 @@ SECTIONS
   /* DWARF 3 */
   .debug_pubtypes 0 : { *(.debug_pubtypes) }
   .debug_ranges   0 : { *(.debug_ranges) }
-  PROVIDE (__stack = 0x2100) ;
+  PROVIDE (__stack = ORIGIN(data) + LENGTH(data));
   PROVIDE (__data_start_rom = _etext) ;
   PROVIDE (__data_end_rom   = _etext + SIZEOF (.data)) ;
   PROVIDE (__noinit_start_rom = _etext + SIZEOF (.data)) ;
   PROVIDE (__noinit_end_rom = _etext + SIZEOF (.data) + SIZEOF (.noinit)) ;
   PROVIDE (__subdevice_has_heap = 0) ;
 }
+
+__IFG1 = 0x0002;
