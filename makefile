@@ -1,45 +1,43 @@
-# makefile configuration
-NAME            = tri86
-OBJECTS         = ./src/can.o ./src/gauge.o ./src/pedal.o ./src/tri86.o ./src/usci.o 
-CPU             = msp430x247
+PROJECT_NAME = tri86
+SOURCE_PATH = src/
+INCLUDE_PATH = include/
+OUTPUT_PATH = build/
 
-ASFLAGS         = -mmcu=${CPU} -x assembler-with-cpp -D_GNU_ASSEMBLER_ -c
-CFLAGS          = -mmcu=${CPU} -O2 -Wall -g -I"." -I".\include" -I"c:/mspgcc/msp430/include"
+SOURCES = $(wildcard $(SOURCE_PATH)*.c)
+OBJECTS = $(patsubst %.c, %.o,$(SOURCES) )
 
-#switch the compiler (for the internal make rules)
-CC              = c:/mspgcc/bin/msp430-gcc
-AS              = c:/mspgcc/bin/msp430-gcc
+# Compiler config
+CC = c:/mspgcc/bin/msp430-gcc
+CPU = msp430x247
+CFLAGS 	= -mmcu=$(CPU) -O2 -Wall -Wunused -I./$(INCLUDE_PATH)
+LDFLAGS = -mmcu=$(CPU) -Wl,-Map=$(OUTPUT_PATH)$*.map
 
-.PHONY: all FORCE clean download download-jtag download-bsl dist
+# ALL: Builds all sources and outputs .a43 and .lst file
+.PHONY: all
+all: $(PROJECT_NAME).deps $(PROJECT_NAME).a43 $(PROJECT_NAME).lst $(PROJECT_NAME).tsf
 
-#all should be the first target. it's built when make is run without args
-all: ${NAME}.elf ${NAME}.a43 ${NAME}.lst
+%.deps:
+	if not exist "$(OUTPUT_PATH)" mkdir "$(OUTPUT_PATH)"
+	@echo rm -f $(OUTPUT_PATH)$@
+	$(CC) -MM $(CFLAGS) $(SOURCES) > $(OUTPUT_PATH)$@
 
-#additional rules for files
-${NAME}.elf: ${OBJECTS} ${NAME}.x
-	${CC} -mmcu=${CPU} -T ${NAME}.x -o $@ ${OBJECTS}
+%.tsf: %.a43
+	msp430-encrypt-public.exe $(OUTPUT_PATH)$^ $(OUTPUT_PATH)$@ 0x00001002 4
 
-${NAME}.a43: ${NAME}.elf
-	c:/mspgcc/bin/msp430-objcopy -O ihex $^ $@
+%.a43: %.elf
+	c:/mspgcc/bin/msp430-objcopy -O ihex $(OUTPUT_PATH)$^ $(OUTPUT_PATH)$@
 
-${NAME}.lst: ${NAME}.elf
-	c:/mspgcc/bin/msp430-objdump -dSt $^ >$@
+%.lst: %.elf
+	c:/mspgcc/bin/msp430-objdump -dSt $(OUTPUT_PATH)$^ > $(OUTPUT_PATH)$@
 
+%.elf: $(OBJECTS)
+	$(CC) $(LDFLAGS) -T $*.x -o $(OUTPUT_PATH)$@ $^
+	@echo ======================================================
+	c:/mspgcc/bin/msp430-size $(OUTPUT_PATH)$@
+	@echo ======================================================
+
+# CLEAN: Removes all output and intermediate files 
 clean:
-	c:/MinGW/msys/1.0/bin/rm -f ${NAME}.elf ${NAME}.a43 ${NAME}.lst ${OBJECTS}
+	rm -f $(OUTPUT_PATH)*.a43 $(OUTPUT_PATH)*.lst $(OUTPUT_PATH)*.elf $(OUTPUT_PATH)*.map $(OUTPUT_PATH)*.deps $(OBJECTS)
 
-#automatic collection of dependencies in the source files.
-#it's only updated the first time, after that it must be done maually
-#with "make depend"
-#the dependecies are included from a separate file:
--include dependencies.in
-#target to update the file, it's removed first
-depend: rmdepend dependencies.in
-#remove the file
-rmdepend:
-	c:/MinGW/msys/1.0/bin/rm -f dependencies.in
-#build the file that contains the dependencies. no deps in this rule.
-#if there were deps it would be rebuilt every chnage, which is unneded:
-dependencies.in:
-	$(CC) -MM ${CFLAGS} $(patsubst %.o,%.c,$(OBJECTS)) >$@
 

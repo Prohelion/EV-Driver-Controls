@@ -1,0 +1,7 @@
+build/
+.deps
+.a43
+.elf
+.lst
+.map
+.tsf
