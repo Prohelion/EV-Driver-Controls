@@ -29,3 +29,29 @@ This repository contains the open-source firmware for the Prohelion EV Driver Co
   ```
   C:\Users\user\EV-Driver-Controls>triFwLoad_2_04.exe build\tri86.tsf
   ```
+
+## Building the firmware inside Docker
+
+1) Start a docker container with a new empty directory mounted to the container using the following command
+  ```
+  mkdir output
+  docker run --name ev-driver-controls -v %cd%/output:/output --rm -i -t prohelion/msp430-builds-public:20081229 bash
+  ```
+
+2) Inside the container, Clone the repository
+```
+  git clone https://github.com/Prohelion/EV-Driver-Controls.git code
+```
+
+3) Inside the container, run the following commands to build to code
+  ```
+  cd code/
+  make -f makefile.docker
+  ```
+
+4) Copy the build artifacts from the `code/build` directory to the `output` directory
+  ```
+  cp -a build/. ../output
+  ```
+
+NOTE: You may see errors similar to "Value too large for defined data type". If this happens on your machine, you will need to first create the container and then clone this repository inside the container. 

@@ -17,7 +17,7 @@ LDFLAGS = -mmcu=$(CPU) -Wl,-Map=$(OUTPUT_PATH)$*.map
 all: $(PROJECT_NAME).deps $(PROJECT_NAME).a43 $(PROJECT_NAME).lst $(PROJECT_NAME).tsf
 
 %.deps:
-	if not exist "$(OUTPUT_PATH)" mkdir "$(OUTPUT_PATH)"
+	if not exist $(OUTPUT_PATH) mkdir $(OUTPUT_PATH)
 	@echo rm -f $(OUTPUT_PATH)$@
 	$(CC) -MM $(CFLAGS) $(SOURCES) > $(OUTPUT_PATH)$@
 

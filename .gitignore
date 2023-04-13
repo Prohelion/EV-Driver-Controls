@@ -1,4 +1,5 @@
 build/
+output/
 .deps
 .a43
 .elf
