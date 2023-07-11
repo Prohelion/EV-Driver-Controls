@@ -1,5 +1,5 @@
 /*
- * Tritium MSP430 2xx USCI SPI interface header file
+ * Tritium internal flash interface header
  * Copyright (c) 2015, Tritium Pty Ltd.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -18,17 +18,50 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
  * OF SUCH DAMAGE. 
  *
+ * Last Modified: A.Rudzki, Tritium Pty Ltd, 13 January 2014
+ *
+ * - Implements the following flash interface functions
+ *	- flash_init
+ *	- flash_erase
+ *	- flash_read
+ *	- flash_write
+ *
  */
 
-#ifndef USCI_H
-#define USCI_H
+#ifndef FLASH_H
+#define FLASH_H
 
-// Public Function prototypes
-void 			usci_init( unsigned char clock );
-void			usci_transmit( unsigned char data );
-unsigned char 	usci_exchange( unsigned char data );
+// Public function prototypes
+void flash_init(void);
+void flash_erase(void);
+void flash_read(unsigned char *ptr, unsigned char size );
+void flash_write(unsigned char *ptr, unsigned char size );
 
-// Private Function prototypes
+// Public variables
+typedef struct _flash_config {
+	unsigned long 	serial;
+	unsigned int 	can_id;
+	unsigned int	can_bitrate;
+	//Add any other flash configuration items you want after can_bitrate
+} flash_config;
 
-#endif	// USCI_H
+extern flash_config flash;
 
+// Flash segment address
+#define FLASH_BASE_ADDR			0x1000
+
+// Flash identifiers for comms etc
+// Mandatory Config Items and Locations for Bootloader
+#define FLASH_SERIAL				0x01	//1
+#define FLASH_CAN_ID				0x02	//2
+#define FLASH_CAN_BITRATE			0x03	//3
+//Add any other flash configuration item accessor IDs here. Dont forget to add to switch cases in tri86.c CAN packet reception section
+//
+#define FLASH_WRITE_TRIGGER			0xFF	//255
+
+// Flash commands
+#define FLASH_CMD_WRITE		0			// Data from PC, to insert into flash memory
+#define FLASH_CMD_READ		1			// Request from PC, to read a location in flash memory
+#define FLASH_CMD_REPLY		2			// The reply to the PC in response to a FLASH_CMD_READ, with the data
+
+#endif

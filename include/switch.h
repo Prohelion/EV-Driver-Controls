@@ -1,5 +1,5 @@
 /*
- * Tritium MSP430 2xx USCI SPI interface header file
+ * Tritium switch input interface
  * Copyright (c) 2015, Tritium Pty Ltd.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, 
@@ -20,15 +20,36 @@
  *
  */
 
-#ifndef USCI_H
-#define USCI_H
+#ifndef SWITCH_H
+#define SWITCH_H
 
-// Public Function prototypes
-void 			usci_init( unsigned char clock );
-void			usci_transmit( unsigned char data );
-unsigned char 	usci_exchange( unsigned char data );
+// Public function prototypes
+void switch_init( unsigned int *state );
+void switch_update( unsigned int *state );
 
-// Private Function prototypes
+// Public variables
+// Switch inputs - same bitfield positions as CAN packet spec
+extern unsigned int switches;
 
-#endif	// USCI_H
+// Driver controls switch position packet bitfield positions
+#define SW_MODE_R			0x0001
+#define SW_MODE_N			0x0002
+#define SW_MODE_B			0x0004
+#define SW_MODE_D			0x0008
+#define SW_IGN_ACC			0x0010
+#define SW_IGN_ON			0x0020
+#define SW_IGN_START		0x0040
+#define SW_BRAKE			0x0080
+#define SW_FUEL				0x0100
+#define SW_SPARE1			0x0200
+#define SW_SPARE2			0x0400
+#define SW_SPARE3			0x0800
+#define SW_ACCEL_FAULT		0x1000
+#define SW_CAN_FAULT		0x2000
+#define SW_BRAKE_FAULT		0x4000
+#define SW_REV_FAULT		0x8000
 
+// Input de-glitching filter length
+#define SW_FILTER_LENGTH	5
+
+#endif	// SWITCH_H
