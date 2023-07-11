@@ -77,7 +77,7 @@
 // #define CUTOUT_ON_BRAKE		// Cut throttle on brake pedal active (solarcar preference to avoid dragging brakes)
 
 // Device serial number
-#define DEVICE_SERIAL		8070
+#define DEVICE_ID		0x1002
 
 // Constant Definitions
 #define	TRUE				1

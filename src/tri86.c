@@ -428,7 +428,7 @@ int main( void )
 					can_push_ptr->data.data_u8[6] = '0';
 					can_push_ptr->data.data_u8[5] = '8';
 					can_push_ptr->data.data_u8[4] = '6';
-					can_push_ptr->data.data_u32[0] = DEVICE_SERIAL;
+					can_push_ptr->data.data_u32[0] = DEVICE_ID;
 					can_push();		
 				}
 			}
@@ -507,7 +507,7 @@ int main( void )
 						can_push_ptr->data.data_u8[2] = '0';
 						can_push_ptr->data.data_u8[1] = '8';
 						can_push_ptr->data.data_u8[0] = '6';
-						can_push_ptr->data.data_u32[1] = DEVICE_SERIAL;
+						can_push_ptr->data.data_u32[1] = DEVICE_ID;
 						can_push();
 						break;
 					case DC_CAN_BASE + DC_DRIVE:
