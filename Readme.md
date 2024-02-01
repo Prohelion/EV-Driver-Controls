@@ -1,5 +1,7 @@
 # Prohelion EV Driver Controls (PHLN-3000-0008)
 
+The following is an example implementation of handling Regen Braking and Cruise Control with the Prohelion driver control unit.
+
 This repository contains the open-source firmware for the Prohelion EV Driver Controls unit. The device can be purchased from the [Prohelion Website](https://www.prohelion.com)
 
 - This firmware is written to use the GNU GCC3 toolchain, please read the install instructions below.
