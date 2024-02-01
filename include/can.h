@@ -19,7 +19,7 @@
  * OF SUCH DAMAGE. 
  *
  */
-
+  
 // Public function prototypes
 extern void	can_init( unsigned int bitrate_index );
 extern char	can_transmit( void );

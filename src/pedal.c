@@ -29,7 +29,7 @@
  *		Motor rpm setpoint
  *		Errors
  *
- */
+ */  
 
 // Include files
 #include <msp430x24x.h>

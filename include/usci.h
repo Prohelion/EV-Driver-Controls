@@ -4,7 +4,7 @@
  *
  * Last Modified: J.Kennedy, Tritium Pty Ltd, 30 September 2009
  *
- */
+ */  
  
 // Public Function prototypes
 extern 	void 			usci_init( unsigned char clock );

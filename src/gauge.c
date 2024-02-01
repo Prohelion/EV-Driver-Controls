@@ -24,7 +24,7 @@
  *	- gauge_power_update
  *	- gauge_temp_update
  *	- gauge_fuel_update
- */
+ */  
 
 // Include files
 #include <msp430x24x.h>

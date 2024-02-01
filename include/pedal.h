@@ -21,7 +21,7 @@
  * - Implements the following pedal interface functions:
  *	- process_pedal
  *
- */
+ */  
 
 // Public function prototypes
 extern void process_pedal( unsigned int a, unsigned int b, unsigned int c, unsigned char request_regen );

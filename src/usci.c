@@ -23,7 +23,7 @@
  *	- transmit
  *	- exchange
  *
- */
+ */  
 
 // Include files
 #include <msp430x24x.h>
